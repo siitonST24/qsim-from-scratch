@@ -1,0 +1,20 @@
+[project]
+name = "qsim-from-scratch"
+version = "0.0.1"
+description = "A quantum circuit simulator built from scratch with NumPy"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["numpy"]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
