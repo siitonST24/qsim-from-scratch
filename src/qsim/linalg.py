@@ -193,6 +193,9 @@ def _as_vector(x: npt.ArrayLike, name: str) -> np.ndarray:
     """Convert x to a 1-D numeric array, accepting (n,), (1, n), and (n, 1)."""
     arr = np.asarray(x)
 
+    if arr.size == 0:
+        raise ValueError(f"{name} must not be empty")
+
     if not np.issubdtype(arr.dtype, np.number):
         raise TypeError(f"{name} must contain numbers, got dtype {arr.dtype}")
 
@@ -205,9 +208,6 @@ def _as_vector(x: npt.ArrayLike, name: str) -> np.ndarray:
         raise ValueError(
             f"{name} must be a row or column vector, got shape {arr.shape}"
         )
-
-    if arr.size == 0:
-        raise ValueError(f"{name} must not be empty")
 
     return arr.ravel()
 
