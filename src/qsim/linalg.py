@@ -103,6 +103,92 @@ def ketbra(a: npt.ArrayLike, b: npt.ArrayLike) -> np.ndarray:
     return (a @ np.conj(b)).astype(np.complex128)
 
 
+def is_hermitian(A: npt.ArrayLike) -> bool:
+    """Return whether a square matrix is Hermitian.
+
+    A matrix ``A`` is Hermitian if it equals its conjugate transpose,
+    ``A = A^dagger``. The comparison uses ``numpy.allclose`` with its
+    default tolerances.
+
+    Parameters
+    ----------
+    A : array_like
+        A square matrix of shape (n, n).
+
+    Returns
+    -------
+    bool
+        True if ``A`` is Hermitian within numerical tolerance.
+
+    Raises
+    ------
+    TypeError
+        If ``A`` contains non-numeric values.
+    ValueError
+        If ``A`` is empty or is not a square matrix.
+
+    Examples
+    --------
+    >>> is_hermitian([[0, -1j], [1j, 0]])
+    True
+    >>> is_hermitian([[1, 0], [0, 1j]])
+    False
+    """
+    A = _as_square_matrix(A, "A")
+    return np.allclose(A, np.conj(A).T)
+
+
+def is_unitary(U: npt.ArrayLike) -> bool:
+    """Return whether a square matrix is unitary.
+
+    A matrix ``U`` is unitary if ``U U^dagger = I``. For square matrices,
+    this is equivalent to ``U^dagger U = I``. The comparison uses
+    ``numpy.allclose`` with its default tolerances.
+
+    Parameters
+    ----------
+    U : array_like
+        A square matrix of shape (n, n).
+
+    Returns
+    -------
+    bool
+        True if ``U`` is unitary within numerical tolerance.
+
+    Raises
+    ------
+    TypeError
+        If ``U`` contains non-numeric values.
+    ValueError
+        If ``U`` is empty or is not a square matrix.
+
+    Examples
+    --------
+    >>> is_unitary([[1, 0], [0, 1j]])
+    True
+    >>> is_unitary([[1, 0], [0, 2]])
+    False
+    """
+    U = _as_square_matrix(U, "U")
+    return np.allclose(U @ np.conj(U).T, np.identity(U.shape[0]))
+
+
+def _as_square_matrix(A: npt.ArrayLike, name: str) -> np.ndarray:
+    """Convert A to a non-empty, numeric, square 2-D array."""
+    mat = np.asarray(A)
+
+    if mat.size == 0:
+        raise ValueError(f"{name} must not be empty")
+
+    if not np.issubdtype(mat.dtype, np.number):
+        raise TypeError(f"{name} must contain numbers, got dtype {mat.dtype}")
+
+    if not (mat.ndim == 2 and mat.shape[0] == mat.shape[1]):
+        raise ValueError(f"{name} must be a square matrix, got shape {mat.shape}")
+
+    return mat
+
+
 def _as_vector(x: npt.ArrayLike, name: str) -> np.ndarray:
     """Convert x to a 1-D numeric array, accepting (n,), (1, n), and (n, 1)."""
     arr = np.asarray(x)
